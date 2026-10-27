@@ -80,58 +80,93 @@ class EventController extends Controller
     }
 
 
+
     public function dashboard()
     {
         $user = auth()->user();
 
-        $events = Event::where("user_id", $user->id)->get();
 
-        return view("events.dashboard", compact("events"));
+        $events = Event::where('user_id', $user->id)->get();
+
+
+        $eventasparticipant = $user->eventAsParticipant;
+
+        return view('events.dashboard', compact(
+            'events',
+            'eventasparticipant'
+        ));
     }
+
+
 
     public function destroy($id)
     {
+        $event = Event::findOrFail($id);
 
-        Event::findOrFail($id)->delete();
+        // Eliminar primeiro as participações dos utilizadores
+        $event->users()->detach();
 
-        return redirect("/dashboard")->with("mgs", "Evento excluido com sucesso!");
+        // Eliminar o evento
+        $event->delete();
+
+        return redirect('/dashboard')
+            ->with('msg', 'Evento excluído com sucesso!');
     }
 
 
-    
-public function edit($id)
-{
-    $event = Event::findOrFail($id);
-
-    return view("events.edit", ["event" => $event]);
-}
 
 
-public function update(Request $request, $id)
-{
-    $event = Event::findOrFail($id);
+    public function edit($id)
+    {
+        $event = Event::findOrFail($id);
 
-    $data = $request->all();
 
-    if ($request->hasFile("image") && $request->file("image")->isValid()) {
-
-        $requestImage = $request->file("image");
-
-        $extension = $requestImage->extension();
-
-        $imageName = md5(
-            $requestImage->getClientOriginalName() . strtotime("now")
-        ) . "." . $extension;
-
-        $requestImage->move(public_path("img/events"), $imageName);
-
-        $data["image"] = $imageName;
+        return view("events.edit", ["event" => $event]);
     }
 
-    $event->update($data);
 
-    return redirect("/dashboard")
-        ->with("msg", "Evento editado com sucesso!");
-}
+    public function update(Request $request, $id)
+    {
+        $event = Event::findOrFail($id);
+
+        $data = $request->all();
+
+        if ($request->hasFile("image") && $request->file("image")->isValid()) {
+
+            $requestImage = $request->file("image");
+
+            $extension = $requestImage->extension();
+
+            $imageName = md5(
+                $requestImage->getClientOriginalName() . strtotime("now")
+            ) . "." . $extension;
+
+            $requestImage->move(public_path("img/events"), $imageName);
+
+            $data["image"] = $imageName;
+        }
+
+        $event->update($data);
+
+        return redirect("/dashboard")
+            ->with("msg", "Evento editado com sucesso!");
+    }
+
+
+    public function joinEvent(int $id)
+    {
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        $event = Event::findOrFail($id);
+
+        $user->eventsAsParticipant()->attach($id);
+
+        return redirect('/dashboard')
+            ->with('msg', 'Participação registada com sucesso!');
+    }
+
+
+
 
 }

@@ -8,7 +8,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Laravel\Sanctum\HasApiTokens;
+
 
 class User extends Authenticatable
 {
@@ -59,8 +61,18 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
-      public function event(){
+    public function events()
+    {
+        return $this->hasMany(\App\Models\Event::class);
+    }
 
-     return $this->hasMany("App\Model\Event");
-     }  
+public function eventAsParticipant()
+{
+    return $this->belongsToMany(
+        \App\Models\Event::class,
+        'event_user',
+        'user_id',
+        'event_id'
+    );
+}
 }

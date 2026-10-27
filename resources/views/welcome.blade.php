@@ -45,7 +45,7 @@
                 </h5>
 
                 <p class="card-participantes">
-                    X Participantes
+                   {{ count($event->users)}}
                 </p>
 
                 <a href="/events/{{ $event->id }}" class="btn btn-primary">
