@@ -22,7 +22,9 @@
 
 <body>
     <header>
-        <img src="IMG/LOGO.jpeg" alt="" width="50px">
+        <a href="/">
+            <img src="/IMG/LOGO.jpeg" alt="Logo" width="50px">
+        </a>
         <nav>
 
             <ul>

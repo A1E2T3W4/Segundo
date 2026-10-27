@@ -27,7 +27,8 @@
                 </div>
             </div>
             <div>
-                <form action="/events/join/{{ $event->id }}" method="POST">
+               @if(!$hasUserJoined)
+                     <form action="/events/join/{{ $event->id }}" method="POST">
                     @csrf
                     <a href="/events/join/{{ $event->id }}"
                         class="btn btn-primary"
@@ -37,6 +38,11 @@
                         Confirmar Presença
                     </a>
                 </form>
+               @else
+                    <div class="N-evento">
+                        <p class="already-joined-ms">Você ja esta participando do evento.</p>
+                    </div>
+               @endif
             </div>
 
             <div>

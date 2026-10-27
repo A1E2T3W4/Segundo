@@ -71,11 +71,27 @@ class EventController extends Controller
     {
         $event = Event::findOrFail($id);
 
+        $user = auth()->user();
+
+        $hasUserJoined = false;
+
+        if($user) {
+            $userEvents = $user->eventsAsparticipant->toArray();
+
+            foreach($userEvents as $userEvent){
+                if($userEvent["id"] == $id){
+                     $hasUserJoined = true;
+                }
+            }
+
+        }
+
         $eventOwner = \App\Models\User::find($event->user_id);
 
         return view("events.show", [
             "event" => $event,
-            "eventOwner" => $eventOwner
+            "eventOwner" => $eventOwner,
+            "hasUserJoined" =>  $hasUserJoined
         ]);
     }
 
@@ -83,18 +99,19 @@ class EventController extends Controller
 
     public function dashboard()
     {
+        /** @var \App\Models\User $user */
         $user = auth()->user();
 
-
+       
         $events = Event::where('user_id', $user->id)->get();
 
+      
+        $eventasparticipant = $user->eventsAsParticipant()->get();
 
-        $eventasparticipant = $user->eventAsParticipant;
-
-        return view('events.dashboard', compact(
-            'events',
-            'eventasparticipant'
-        ));
+        return view('events.dashboard', [
+            'events' => $events,
+            'eventasparticipant' => $eventasparticipant
+        ]);
     }
 
 
@@ -103,10 +120,10 @@ class EventController extends Controller
     {
         $event = Event::findOrFail($id);
 
-        // Eliminar primeiro as participações dos utilizadores
+        
         $event->users()->detach();
 
-        // Eliminar o evento
+      
         $event->delete();
 
         return redirect('/dashboard')
@@ -168,5 +185,16 @@ class EventController extends Controller
 
 
 
+    public function leaveEvent($id)
+    {
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
 
+        $event = Event::findOrFail($id);
+
+        $user->eventsAsParticipant()->detach($event->id);
+
+        return redirect('/dashboard')
+            ->with('msg', 'Deixaste de participar neste evento!');
+    }
 }

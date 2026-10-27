@@ -22,8 +22,9 @@
         @else
         <h2>Proximos Eventos</h2>
         @endif
-
-        <p>Veja os Eventos dos proximos dias</p>
+<div class="N-evento">
+            <p>Veja os Eventos dos proximos dias</p>
+</div>
 </div>
 
 <div id="cards-container" class="row">

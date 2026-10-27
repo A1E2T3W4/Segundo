@@ -128,7 +128,7 @@ header {
     width: 100%;
     padding: 12px 5%;
 
-    background: rgba(255, 255, 255, 0.96);
+    background: #F7F7F7;
     border-bottom: 2px solid var(--primary-dark);
 
     backdrop-filter: blur(14px);
